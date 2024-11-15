@@ -10,6 +10,8 @@ struct ContentView: View {
     @State private var alertTitle: String?       // 경고 메시지 제목
     @State private var alertMessage: String?     // 경고 메시지 내용
     @State private var draggedItem: URL?         // 현재 드래그 중인 아이템
+    @State private var isFirstDropLeft = true    // 왼쪽 목록 첫 드롭 여부
+    @State private var isFirstDropRight = true   // 오른쪽 목록 첫 드롭 여부
     
     var body: some View {
         VStack {
@@ -19,7 +21,8 @@ struct ContentView: View {
                     fileURLs: $leftFileURLs,
                     dragOver: $dragOverLeft,
                     title: "동영상 파일 (MP4, MKV)",
-                    validExtensions: ["mp4", "mkv"]
+                    validExtensions: ["mp4", "mkv"],
+                    isFirstDrop: $isFirstDropLeft
                 )
                 
                 Divider() // 가운데 구분선
@@ -29,7 +32,8 @@ struct ContentView: View {
                     fileURLs: $rightFileURLs,
                     dragOver: $dragOverRight,
                     title: "자막 파일 (SMI, SRT, ASS)",
-                    validExtensions: ["smi", "srt", "ass"]
+                    validExtensions: ["smi", "srt", "ass"],
+                    isFirstDrop: $isFirstDropRight
                 )
             }
             .padding()
@@ -65,6 +69,7 @@ struct ContentView: View {
             HStack {
                 Button(action: {
                     leftFileURLs.removeAll()
+                    isFirstDropLeft = true
                 }) {
                     Text("동영상 목록 초기화")
                         .font(.headline)
@@ -77,6 +82,7 @@ struct ContentView: View {
                 
                 Button(action: {
                     rightFileURLs.removeAll()
+                    isFirstDropRight = true
                 }) {
                     Text("자막 목록 초기화")
                         .font(.headline)
@@ -111,7 +117,7 @@ struct ContentView: View {
     }
     
     @ViewBuilder
-    private func fileListView(fileURLs: Binding<[URL]>, dragOver: Binding<Bool>, title: String, validExtensions: [String]) -> some View {
+    private func fileListView(fileURLs: Binding<[URL]>, dragOver: Binding<Bool>, title: String, validExtensions: [String], isFirstDrop: Binding<Bool>) -> some View {
         VStack {
             if fileURLs.wrappedValue.isEmpty {
                 // 파일이 없을 때 드롭 메시지 표시
@@ -152,7 +158,7 @@ struct ContentView: View {
             }
         }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: dragOver) { providers -> Bool in
-            handleFileDrop(providers: providers, fileURLs: fileURLs, validExtensions: validExtensions)
+            handleFileDrop(providers: providers, fileURLs: fileURLs, validExtensions: validExtensions, isFirstDrop: isFirstDrop)
         }
     }
     
@@ -166,31 +172,40 @@ struct ContentView: View {
         }
     }
     
-    private func fetchFiles(from folderURL: URL, validExtensions: [String]) -> [URL] {
+    private func fetchFilesRecursively(from folderURL: URL, validExtensions: [String]) -> [URL] {
         let fileManager = FileManager.default
         var fileURLs: [URL] = []
         
-        do {
-            let contents = try fileManager.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil)
-            fileURLs = contents.filter { validExtensions.contains($0.pathExtension.lowercased()) }
-        } catch {
-            print("폴더 탐색 실패: \(error.localizedDescription)")
+        if let enumerator = fileManager.enumerator(at: folderURL, includingPropertiesForKeys: nil) {
+            for case let fileURL as URL in enumerator {
+                // 폴더 내 모든 파일을 검사
+                if validExtensions.contains(fileURL.pathExtension.lowercased()) {
+                    fileURLs.append(fileURL)
+                }
+            }
+        } else {
+            print("폴더 탐색 실패: \(folderURL)")
         }
         
         return fileURLs
     }
     
-    private func handleFileDrop(providers: [NSItemProvider], fileURLs: Binding<[URL]>, validExtensions: [String]) -> Bool {
+    private func handleFileDrop(providers: [NSItemProvider], fileURLs: Binding<[URL]>, validExtensions: [String], isFirstDrop: Binding<Bool>) -> Bool {
+        
+        let dispatchGroup = DispatchGroup()
+        
         for provider in providers {
+            dispatchGroup.enter() // 작업 시작
             provider.loadDataRepresentation(forTypeIdentifier: UTType.fileURL.identifier) { data, _ in
+                defer { dispatchGroup.leave() } // 작업 완료
                 guard let data = data,
                       let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
                 
                 
                 DispatchQueue.main.async {
                     if url.hasDirectoryPath {
-                        // 폴더인 경우 내부 파일 추가
-                        let folderFiles = fetchFiles(from: url, validExtensions: validExtensions)
+                        // 폴더인 경우 재귀적으로 내부 파일 추가
+                        let folderFiles = fetchFilesRecursively(from: url, validExtensions: validExtensions)
                         fileURLs.wrappedValue.append(contentsOf: folderFiles.filter { !fileURLs.wrappedValue.contains($0) })
                     } else if validExtensions.contains(url.pathExtension.lowercased()) {
                         // 파일인 경우 목록에 추가
@@ -199,7 +214,13 @@ struct ContentView: View {
                         }
                     }
                 }
-                
+            }
+        }
+        dispatchGroup.notify(queue: .main) {
+            // 모든 비동기 작업이 완료된 후 실행
+            if isFirstDrop.wrappedValue {
+                sortFileURLs(&fileURLs.wrappedValue)
+                isFirstDrop.wrappedValue = false
             }
         }
         return true
