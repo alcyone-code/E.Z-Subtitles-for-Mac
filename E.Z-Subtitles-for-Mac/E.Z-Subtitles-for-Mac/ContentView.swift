@@ -15,6 +15,13 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            Button(action: openFullDiskAccessSettings){
+                Text("전체 디스크 접근 설정 열기")
+                    .font(.headline)
+                    .padding()
+                    .frame(width: 200, height: 15)
+                    .cornerRadius(8)
+            }
             HStack {
                 // 왼쪽 목록 - 동영상 파일만
                 fileListView(
@@ -114,7 +121,14 @@ struct ContentView: View {
                 dismissButton: .default(Text("확인"))
             )
         }
+        .padding()
     }
+    
+    private func openFullDiskAccessSettings() {
+            if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles") {
+                NSWorkspace.shared.open(url)
+            }
+        }
     
     @ViewBuilder
     private func fileListView(fileURLs: Binding<[URL]>, dragOver: Binding<Bool>, title: String, validExtensions: [String], isFirstDrop: Binding<Bool>) -> some View {
