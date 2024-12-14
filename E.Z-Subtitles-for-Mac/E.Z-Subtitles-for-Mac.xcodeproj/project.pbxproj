@@ -24,7 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FE9D59AB2CE617E100BEC115 /* E.Z-Subtitles-for-Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E.Z-Subtitles-for-Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE9D59AB2CE617E100BEC115 /* E.Z Subtitles for Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "E.Z Subtitles for Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE9D59BC2CE617E300BEC115 /* E.Z-Subtitles-for-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "E.Z-Subtitles-for-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE9D59C62CE617E300BEC115 /* E.Z-Subtitles-for-MacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "E.Z-Subtitles-for-MacUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -85,7 +85,7 @@
 		FE9D59AC2CE617E100BEC115 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FE9D59AB2CE617E100BEC115 /* E.Z-Subtitles-for-Mac.app */,
+				FE9D59AB2CE617E100BEC115 /* E.Z Subtitles for Mac.app */,
 				FE9D59BC2CE617E300BEC115 /* E.Z-Subtitles-for-MacTests.xctest */,
 				FE9D59C62CE617E300BEC115 /* E.Z-Subtitles-for-MacUITests.xctest */,
 			);
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FE9D59AA2CE617E100BEC115 /* E.Z-Subtitles-for-Mac */ = {
+		FE9D59AA2CE617E100BEC115 /* E.Z Subtitles for Mac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FE9D59D02CE617E300BEC115 /* Build configuration list for PBXNativeTarget "E.Z-Subtitles-for-Mac" */;
+			buildConfigurationList = FE9D59D02CE617E300BEC115 /* Build configuration list for PBXNativeTarget "E.Z Subtitles for Mac" */;
 			buildPhases = (
 				FE9D59A72CE617E100BEC115 /* Sources */,
 				FE9D59A82CE617E100BEC115 /* Frameworks */,
@@ -110,11 +110,11 @@
 			fileSystemSynchronizedGroups = (
 				FE9D59AD2CE617E100BEC115 /* E.Z-Subtitles-for-Mac */,
 			);
-			name = "E.Z-Subtitles-for-Mac";
+			name = "E.Z Subtitles for Mac";
 			packageProductDependencies = (
 			);
 			productName = "E.Z-Subtitles-for-Mac";
-			productReference = FE9D59AB2CE617E100BEC115 /* E.Z-Subtitles-for-Mac.app */;
+			productReference = FE9D59AB2CE617E100BEC115 /* E.Z Subtitles for Mac.app */;
 			productType = "com.apple.product-type.application";
 		};
 		FE9D59BB2CE617E300BEC115 /* E.Z-Subtitles-for-MacTests */ = {
@@ -200,7 +200,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FE9D59AA2CE617E100BEC115 /* E.Z-Subtitles-for-Mac */,
+				FE9D59AA2CE617E100BEC115 /* E.Z Subtitles for Mac */,
 				FE9D59BB2CE617E300BEC115 /* E.Z-Subtitles-for-MacTests */,
 				FE9D59C52CE617E300BEC115 /* E.Z-Subtitles-for-MacUITests */,
 			);
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		FE9D59BE2CE617E300BEC115 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FE9D59AA2CE617E100BEC115 /* E.Z-Subtitles-for-Mac */;
+			target = FE9D59AA2CE617E100BEC115 /* E.Z Subtitles for Mac */;
 			targetProxy = FE9D59BD2CE617E300BEC115 /* PBXContainerItemProxy */;
 		};
 		FE9D59C82CE617E300BEC115 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FE9D59AA2CE617E100BEC115 /* E.Z-Subtitles-for-Mac */;
+			target = FE9D59AA2CE617E100BEC115 /* E.Z Subtitles for Mac */;
 			targetProxy = FE9D59C72CE617E300BEC115 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -392,19 +392,24 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "E.Z-Subtitles-for-Mac/E_Z_Subtitles_for_Mac.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"E.Z-Subtitles-for-Mac/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MARKETING_VERSION = 0.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "Alcyone.E-Z-Subtitles-for-Mac";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -417,19 +422,24 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = "E.Z-Subtitles-for-Mac/E_Z_Subtitles_for_Mac.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"E.Z-Subtitles-for-Mac/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MARKETING_VERSION = 0.1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "Alcyone.E-Z-Subtitles-for-Mac";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -513,7 +523,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FE9D59D02CE617E300BEC115 /* Build configuration list for PBXNativeTarget "E.Z-Subtitles-for-Mac" */ = {
+		FE9D59D02CE617E300BEC115 /* Build configuration list for PBXNativeTarget "E.Z Subtitles for Mac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FE9D59D12CE617E300BEC115 /* Debug */,

@@ -12,6 +12,8 @@ struct ContentView: View {
     @State private var draggedItem: URL?         // 현재 드래그 중인 아이템
     @State private var isFirstDropLeft = true    // 왼쪽 목록 첫 드롭 여부
     @State private var isFirstDropRight = true   // 오른쪽 목록 첫 드롭 여부
+    @State private var isAscendingLeft = true    // 왼쪽 목록 정렬 상태
+    @State private var isAscendingRight = true   // 오른쪽 목록 정렬 상태
     
     var body: some View {
         VStack {
@@ -29,7 +31,8 @@ struct ContentView: View {
                     dragOver: $dragOverLeft,
                     title: "동영상 파일 (MP4, MKV)",
                     validExtensions: ["mp4", "mkv"],
-                    isFirstDrop: $isFirstDropLeft
+                    isFirstDrop: $isFirstDropLeft,
+                    isAscending: $isAscendingLeft
                 )
                 
                 Divider() // 가운데 구분선
@@ -40,7 +43,8 @@ struct ContentView: View {
                     dragOver: $dragOverRight,
                     title: "자막 파일 (SMI, SRT, ASS)",
                     validExtensions: ["smi", "srt", "ass"],
-                    isFirstDrop: $isFirstDropRight
+                    isFirstDrop: $isFirstDropRight,
+                    isAscending: $isAscendingRight
                 )
             }
             .padding()
@@ -48,7 +52,7 @@ struct ContentView: View {
             
             HStack {
                 Button(action: {
-                    sortFileURLs(&leftFileURLs)
+                    sortFileURLs(&leftFileURLs, ascending: isAscendingLeft)
                 }) {
                     Text("동영상 정렬")
                         .font(.headline)
@@ -60,7 +64,7 @@ struct ContentView: View {
                 }
                 
                 Button(action: {
-                    sortFileURLs(&rightFileURLs)
+                    sortFileURLs(&rightFileURLs, ascending: isAscendingRight)
                 }) {
                     Text("자막 정렬")
                         .font(.headline)
@@ -131,11 +135,31 @@ struct ContentView: View {
         }
     
     @ViewBuilder
-    private func fileListView(fileURLs: Binding<[URL]>, dragOver: Binding<Bool>, title: String, validExtensions: [String], isFirstDrop: Binding<Bool>) -> some View {
+    private func fileListView(fileURLs: Binding<[URL]>, dragOver: Binding<Bool>, title: String, validExtensions: [String], isFirstDrop: Binding<Bool>, isAscending: Binding<Bool>) -> some View {
         VStack {
+            // 제목 줄
+            HStack {
+                Text(title)
+                    .font(.headline)
+                Spacer()
+                Button(action: {
+                    // 정렬 상태를 토글하고 리스트를 재정렬
+                    isAscending.wrappedValue.toggle()
+                    sortFileURLs(&fileURLs.wrappedValue, ascending: isAscending.wrappedValue)
+                }) {
+                    HStack {
+                        Text(isAscending.wrappedValue ? "오름차순" : "내림차순")
+                        Image(systemName: isAscending.wrappedValue ? "arrow.up" : "arrow.down")
+                    }
+                    .font(.subheadline)
+                    .foregroundColor(.blue)
+                }
+            }
+            .padding(.bottom, 5)
+            
             if fileURLs.wrappedValue.isEmpty {
                 // 파일이 없을 때 드롭 메시지 표시
-                Text("\(title)에 파일을 드롭하세요")
+                Text("\(title)을 파일을 드롭하세요")
                     .font(.headline)
                     .padding()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -172,7 +196,7 @@ struct ContentView: View {
             }
         }
         .onDrop(of: [UTType.fileURL.identifier], isTargeted: dragOver) { providers -> Bool in
-            handleFileDrop(providers: providers, fileURLs: fileURLs, validExtensions: validExtensions, isFirstDrop: isFirstDrop)
+            handleFileDrop(providers: providers, fileURLs: fileURLs, validExtensions: validExtensions, isFirstDrop: isFirstDrop, isAscending: isAscending)
         }
     }
     
@@ -204,7 +228,7 @@ struct ContentView: View {
         return fileURLs
     }
     
-    private func handleFileDrop(providers: [NSItemProvider], fileURLs: Binding<[URL]>, validExtensions: [String], isFirstDrop: Binding<Bool>) -> Bool {
+    private func handleFileDrop(providers: [NSItemProvider], fileURLs: Binding<[URL]>, validExtensions: [String], isFirstDrop: Binding<Bool>, isAscending: Binding<Bool>) -> Bool {
         
         let dispatchGroup = DispatchGroup()
         
@@ -233,17 +257,19 @@ struct ContentView: View {
         dispatchGroup.notify(queue: .main) {
             // 모든 비동기 작업이 완료된 후 실행
             if isFirstDrop.wrappedValue {
-                sortFileURLs(&fileURLs.wrappedValue)
+                sortFileURLs(&fileURLs.wrappedValue, ascending: isAscending.wrappedValue)
                 isFirstDrop.wrappedValue = false
             }
         }
         return true
     }
     
-    private func sortFileURLs(_ fileURLs: inout [URL]) {
-        // 자연스러운 정렬을 적용
-        fileURLs.sort(by: { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending })
-    }
+    private func sortFileURLs(_ fileURLs: inout [URL], ascending: Bool) {
+            fileURLs.sort {
+                let comparison = $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent)
+                return ascending ? (comparison == .orderedAscending) : (comparison == .orderedDescending)
+            }
+        }
     
     private func syncFileNames() {
         guard leftFileURLs.count == rightFileURLs.count else {
