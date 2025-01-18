@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import os
 from PySide6.QtWidgets import (
@@ -122,7 +123,13 @@ class EZSubtitlesApp(QWidget):
         main_layout.addWidget(sync_button)
 
     def open_disk_access_settings(self):
-        QMessageBox.information(self, "디스크 접근 설정", "디스크 접근 설정은 수동으로 설정해야 합니다.")
+        #QMessageBox.information(self, "디스크 접근 설정", "디스크 접근 설정은 수동으로 설정해야 합니다.")
+        url = "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+        try:
+            subprocess.run(["open", url], check=True)
+            print("Opened Full Disk Access settings.")
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to open settings: {e}")
 
     def handle_file_drop(self, list_widget, files):
         if list_widget == self.video_list:
